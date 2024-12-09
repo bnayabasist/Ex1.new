@@ -2,6 +2,7 @@
 
     package
 
+
             assignments.ex1;
     /**
      * This class represents a simple solution for Ex1.
@@ -19,15 +20,17 @@
         /**
          * Convert the given number (num) to a decimal representation (as int).
          * It the given number is not in a valid format returns -1.
-         * @param num a String representing a number in basis [2,16]
+         * @param //num a String representing a number in basis [2,16]
          * @return
          */
-        public static int number2Int(String num) {
-            int ans = -1;
-            // add your code here
+        public static int number2Int(String str) {
+            int num = Integer.parseInt(str);
+            if (num < 0)
+            {
+                return -1;
+            }
 
-            ////////////////////
-            return ans;
+            return num;
         }
         /**
          * This static function checks if the given String (g) is in a valid "number" format.
@@ -36,9 +39,50 @@
          */
         public static boolean isNumber(String a) {
             boolean ans = true;
-            // add your code here
 
-            ////////////////////
+            if (a == null || a.isEmpty() || !a.contains("b")){ // if number is empty or not reffering to any object or without b return false
+                return false;
+            }
+            int Indexb = a.indexOf('b');
+            if(Indexb == -1 || Indexb == 0 || Indexb == a.length() -1){
+                return false;
+            }
+            // validate base checking
+            int base = 0;
+            for (int i = Indexb + 1; i < a.length(); i++){
+                char c = a.charAt(i);
+                if (c < '0' || c > '9'){
+                    return false;
+                }
+                base = base * 10 + (c - '0');
+
+            }
+            if (base < 2 || base > 16){
+                return false;
+            }
+            // check the number part before b
+            String numPart = a.substring(0, Indexb);
+
+            for (char c : numPart.toCharArray()){
+                int digitValue;
+                if (c >= '0' && c <= '9'){
+                    digitValue = c - '0';
+                }else {
+                    c = Character.toUpperCase(c);
+                    if (c < 'A' || c > 'F') {
+                        return false;
+                    }
+                    digitValue = c - 'A' + 10;
+                    }
+
+                    if (digitValue >= base){
+                        return false;
+
+                }
+            }
+
+
+
             return ans;
         }
 
@@ -52,9 +96,9 @@
          */
         public static String int2Number(int num, int base) {
             String ans = "";
-            // add your code here
 
-            ////////////////////
+
+
             return ans;
         }
 
