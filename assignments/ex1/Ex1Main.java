@@ -15,13 +15,31 @@ public class Ex1Main {
             System.out.println("Ex1 class solution:");
             System.out.println("Enter a string as number#1 (or \"quit\" to end the program): ");
             num1 = sc.next();
-            if (!num1.equals("quit")) {
 
-                // add your code here
 
-                /////////////////////
-            }
+//                System.out.println("Num 1 is: " + num1 + " is number: true ");
+//                if (!num1.equals("quit")) {
+//
+//                    System.out.println(Ex1.number2Int(num1));
+//                    System.out.println("Enter a string as number#2 (or \"quit\" to end the program): ");
+//                    num2 = sc.next();
+                    if (num2.equals(quit)) break;
+
+                    System.out.println();
+
+
+                    // Display the decimal conversion results
+
+                    System.out.println(" Num #2 is: " + num2 + " is number: true ");
+
+
+                    // add your code here
+
+                    /////////////////////
+                }
+        System.out.println(" quitting now...");
         }
-        System.out.println("quiting now...");
+
     }
-}
+
+

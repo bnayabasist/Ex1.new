@@ -3,7 +3,9 @@
     package
 
 
+
             assignments.ex1;
+
     /**
      * This class represents a simple solution for Ex1.
      * As defined here: https://docs.google.com/document/d/1AJ9wtnL1qdEs4DAKqBlO1bXCM6r6GJ_J/r/edit/edit
@@ -17,6 +19,18 @@
      * You should implement the following static functions:
      */
     public class Ex1 {
+
+        public static void main(String[] args) {
+        // good: "1", "1b2", "01b2", "123bA", "ABbG", "0bA"
+            //bad:"b2", "2b2", "1G3bG", " BbG", "0bbA", "abB", "!@b2", "A", "1bb2"
+            //suppose bad: " BbG","abB",
+
+            if (isNumber(" BbG")) {
+            System.out.println("GOOD");
+        }
+        else System.out.println("BAD");
+        }
+
         /**
          * Convert the given number (num) to a decimal representation (as int).
          * It the given number is not in a valid format returns -1.
@@ -24,11 +38,52 @@
          * @return
          */
         public static int number2Int(String str) {
-            int num = Integer.parseInt(str);
-            if (num < 0)
-            {
-                return -1;
+            boolean isNum = true;
+                for (int i = 0; i<str.length(); i++){
+                    int ch = str.charAt(i);
+                    if(ch<48 || ch > 57){
+                        isNum=false;
+                    }
+                }
+
+
+            if (str == null || str.isEmpty() || !isNumber(str)) {
+                return -1; // Invalid input
             }
+
+            // If no 'b' is present, assume base 10
+            if (!str.contains("b")) {
+                str += "b10";
+            }
+
+
+            //split the string for 2 parts- before b and after b and convert them
+            String[] parts = str.split("b");
+            String number = parts[0].toUpperCase();
+            int base = 0;
+            for (char c : parts[1].toCharArray()) {
+                base = base * 10 + (Character.isDigit(c) ? c - '0' : c - 'A' + 10);
+            }
+
+            if (base < 2 || base > 16) {
+                return -1; // Invalid base
+            }
+
+            // Convert the number string to decimal platform
+            int num = 0;
+            int power = 1;
+            for (int i = number.length() - 1; i >= 0; i--) {
+                char digit = number.charAt(i);
+                int value = Character.isDigit(digit) ? digit - '0' : digit - 'A' + 10;
+                if (value >= base) {
+                    return -1; // Invalid digit for the base
+                }
+
+                num += value * power;
+                power *= base;
+            }
+
+
 
             return num;
         }
@@ -38,52 +93,57 @@
          * @return true iff the given String is in a number format
          */
         public static boolean isNumber(String a) {
-            boolean ans = true;
-
-            if (a == null || a.isEmpty() || !a.contains("b")){ // if number is empty or not reffering to any object or without b return false
+            //boolean ans = true;
+            a = a.trim();
+            if (a == null || a.isEmpty()) { // if number is empty or not reffering to any object or without b return false
                 return false;
+            }
+            if (!a.contains("b")) {
+                a += "bA";
             }
             int Indexb = a.indexOf('b');
-            if(Indexb == -1 || Indexb == 0 || Indexb == a.length() -1){
+            if (Indexb == -1) {
+                return a.matches("[0-9A-Ga-g]+"); // No "b", check as base-10 by default
+            }
+            if (Indexb == 0 || Indexb == a.length() - 1) {
+                return false; // "b" at invalid position
+            }
+            String numPart = a.substring(0, Indexb).toUpperCase();
+            String baseStr = a.substring(Indexb + 1).toUpperCase();
+
+            // Validate the base
+            if (!baseStr.matches("[2-9A-G]")) {
                 return false;
             }
+            if (!numPart.matches("[0-9A-G]+")) { // Ensure valid characters
+                return false;
+            }
+
             // validate base checking
             int base = 0;
-            for (int i = Indexb + 1; i < a.length(); i++){
-                char c = a.charAt(i);
-                if (c < '0' || c > '9'){
-                    return false;
-                }
-                base = base * 10 + (c - '0');
+            for (char c : baseStr.toCharArray()) {
+                base = base * 10 + (Character.isDigit(c) ? c - '0' : c - 'A' + 10);
 
             }
-            if (base < 2 || base > 16){
+            if (base < 2 || base > 16) {
                 return false;
             }
+
             // check the number part before b
-            String numPart = a.substring(0, Indexb);
 
-            for (char c : numPart.toCharArray()){
-                int digitValue;
-                if (c >= '0' && c <= '9'){
-                    digitValue = c - '0';
-                }else {
-                    c = Character.toUpperCase(c);
-                    if (c < 'A' || c > 'F') {
-                        return false;
-                    }
-                    digitValue = c - 'A' + 10;
-                    }
-
-                    if (digitValue >= base){
-                        return false;
-
+//            if (!numPart.matches(".*\\d.*")) { // Ensure there's at least one digit
+//                return false;
+//            }
+            for (char c : numPart.toCharArray()) {
+                int digitValue = Character.isDigit(c) ? c - '0' : c - 'A' + 10;
+                if (digitValue >= base) {
+                    return false;
                 }
+
+
             }
 
-
-
-            return ans;
+            return true;
         }
 
         /**
@@ -96,9 +156,35 @@
          */
         public static String int2Number(int num, int base) {
             String ans = "";
+            if (num < 0){
+                return "";
+            }
+            if (base < 2 || base > 16) {
+            return "";
+            }
+            char[] customDigits = {
+                    'A', // 10
+                    'B', // 11
+                    'C', // 12
+                    'D', // 13
+                    'E', // 14
+                    'F', // 15
+                    'G'  // 16
+            };
+            StringBuilder str = new StringBuilder();
+            while (num > 0) {
+                int mod = num % base;
+                char ch;
+                if (mod < 10){
+                    ch = (char) + ('0' + mod);
+                }else {
+                    ch = customDigits[mod - 10]; // for 10-15
+                }
+                str.insert(0, ch); // add number to beginning of string from last to first
+                num /= base; // divide number in base
 
 
-
+            }
             return ans;
         }
 
@@ -109,12 +195,15 @@
          * @return true iff the two numbers have the same values.
          */
         public static boolean equals(String n1, String n2) {
-            boolean ans = true;
-            // add your code here
 
-            ////////////////////
-            return ans;
+            int num1 = number2Int(n1);
+            int num2 = number2Int(n2);
+            if (num1 == num2) {
+                return true;
+            }
+            return number2Int(n1) == number2Int(n2);
         }
+
 
         /**
          * This static function search for the array index with the largest number (in value).
@@ -126,12 +215,52 @@
          */
         public static int maxIndex(String[] arr) {
             int ans = 0;
+
+            int[] Numbers = {}
             // add your code here
 
             ////////////////////
             return ans;
+
+
+
+
+
         }
-    }
+//        public static int NormalNum(String S){
+//            int NewNum = Integer.parseInt(S);
+//            System.out.println("num1" + " = );
+////            System.out.print( " , value: " + S);
+//
+//
+//            return NewNum;
+
+//        public static int BaseCheck(String str){
+//          if(str == null ||str.isEmpty()|| str.equals("") || str.length() >1){
+//              return -1;
+//          }
+//          if (str.charAt(0) == 48 || str.charAt(0) == 49 ){
+//              return -1;
+//            }
+//          if (str.charAt(0) >= 50 && str.charAt(0) <= 57){
+//              return Integer.parseInt(str);
+//          }
+//          if (str.charAt(0) >= 65 && str.charAt(0) <= 71){
+//              String[] letters = {"A", "B", "C", "D", "E", "F", "G"};
+//
+//              for (int i = 0; i<letters.length; i++ ){
+//                  if (letters[i].equals(str)){
+//                      return i + 10;
+//                  }
+//              }
+//
+//          }
+//          return  -1;
+//        }
+
+        }
+
+
 
 
 
