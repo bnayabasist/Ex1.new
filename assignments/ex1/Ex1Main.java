@@ -52,7 +52,7 @@ public class Ex1Main {
             System.out.println(num1 + " * " + num2 + " = " + productResult + "b" + outputBase);
 
             String[] numbers = {num1, num2, sum + "b" + outputBase, productResult
-
+///
                     + "b" + outputBase};
             int maxIndex = Ex1.maxIndex(numbers);
 

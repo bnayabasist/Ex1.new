@@ -20,7 +20,7 @@ public class Ex1Test {
             assertEquals(v,v2);
             assertTrue(Ex1.equals(s10,s2));
         }
-
+///
         @Test
         void isBasisNumberTest() {
             String[] good = {"1", "1b2", "01b2", "123bA", "ABbG", "0bA"};

@@ -47,6 +47,8 @@
                 str += "b10";
             }
 
+//sdadas
+
 
             //split the string for 2 parts- before b and after b and convert them
             String[] parts = str.split("b");
