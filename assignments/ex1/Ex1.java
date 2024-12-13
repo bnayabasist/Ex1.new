@@ -20,16 +20,7 @@
      */
     public class Ex1 {
 
-        public static void main(String[] args) {
-        // good: "1", "1b2", "01b2", "123bA", "ABbG", "0bA"
-            //bad:"b2", "2b2", "1G3bG", " BbG", "0bbA", "abB", "!@b2", "A", "1bb2"
-            //suppose bad: " BbG","abB",
 
-            if (isNumber(" BbG")) {
-            System.out.println("GOOD");
-        }
-        else System.out.println("BAD");
-        }
 
         /**
          * Convert the given number (num) to a decimal representation (as int).
@@ -38,13 +29,13 @@
          * @return
          */
         public static int number2Int(String str) {
-            boolean isNum = true;
-                for (int i = 0; i<str.length(); i++){
-                    int ch = str.charAt(i);
-                    if(ch<48 || ch > 57){
-                        isNum=false;
-                    }
-                }
+//            boolean isNum = true;
+//                for (int i = 0; i<str.length(); i++){
+//                    int ch = str.charAt(i);
+//                    if(ch<48 || ch > 57){
+//                        isNum=false;
+//                    }
+//                }
 
 
             if (str == null || str.isEmpty() || !isNumber(str)) {
@@ -60,10 +51,8 @@
             //split the string for 2 parts- before b and after b and convert them
             String[] parts = str.split("b");
             String number = parts[0].toUpperCase();
-            int base = 0;
-            for (char c : parts[1].toCharArray()) {
-                base = base * 10 + (Character.isDigit(c) ? c - '0' : c - 'A' + 10);
-            }
+            int base = Integer.parseInt(parts[1], 16);
+
 
             if (base < 2 || base > 16) {
                 return -1; // Invalid base
@@ -94,49 +83,43 @@
          */
         public static boolean isNumber(String a) {
             //boolean ans = true;
-            a = a.trim();
-            if (a == null || a.isEmpty()) { // if number is empty or not reffering to any object or without b return false
+
+            if (a == null || a.trim().isEmpty()) { // if number is empty or not reffering to any object or without b return false
                 return false;
             }
             if (!a.contains("b")) {
-                a += "bA";
+                a += "b10";
             }
-            int Indexb = a.indexOf('b');
-            if (Indexb == -1) {
-                return a.matches("[0-9A-Ga-g]+"); // No "b", check as base-10 by default
+            String[] parts = a.split("b");
+            if (parts.length != 2 || parts[0].isEmpty() || parts[1].isEmpty()) {
+                return false;
             }
-            if (Indexb == 0 || Indexb == a.length() - 1) {
-                return false; // "b" at invalid position
-            }
-            String numPart = a.substring(0, Indexb).toUpperCase();
-            String baseStr = a.substring(Indexb + 1).toUpperCase();
+            String number = parts[0].toUpperCase();
+            String baseStr = parts[1].toUpperCase();
+
 
             // Validate the base
-            if (!baseStr.matches("[2-9A-G]")) {
-                return false;
-            }
-            if (!numPart.matches("[0-9A-G]+")) { // Ensure valid characters
-                return false;
-            }
+
 
             // validate base checking
             int base = 0;
             for (char c : baseStr.toCharArray()) {
-                base = base * 10 + (Character.isDigit(c) ? c - '0' : c - 'A' + 10);
-
+                if (Character.isDigit(c)) {
+                    base = base * 10 + (c - '0');
+                } else if (c >= 'A' && c <= 'F') {
+                    base = base * 10 + (c - 'A' + 10);
+                } else {
+                    return false;
+                }
             }
             if (base < 2 || base > 16) {
                 return false;
             }
 
             // check the number part before b
-
-//            if (!numPart.matches(".*\\d.*")) { // Ensure there's at least one digit
-//                return false;
-//            }
-            for (char c : numPart.toCharArray()) {
-                int digitValue = Character.isDigit(c) ? c - '0' : c - 'A' + 10;
-                if (digitValue >= base) {
+            for (char c : number.toCharArray()) {
+                int Value = Character.isDigit(c) ? c - '0' : c - 'A' + 10;
+                if (Value >= base) {
                     return false;
                 }
 
@@ -157,10 +140,10 @@
         public static String int2Number(int num, int base) {
             String ans = "";
             if (num < 0){
-                return "";
+                return ans;
             }
             if (base < 2 || base > 16) {
-            return "";
+            return ans;
             }
             char[] customDigits = {
                     'A', // 10
@@ -185,7 +168,7 @@
 
 
             }
-            return ans;
+            return str.toString();
         }
 
         /**
@@ -215,18 +198,42 @@
          */
         public static int maxIndex(String[] arr) {
             int ans = 0;
+            int[] Numbers = new int[arr.length];
 
-            int[] Numbers = {}
             // add your code here
-
-            ////////////////////
+            int maxValue = Integer.MIN_VALUE; // to put in memory max value
+            for (int i = 0; i < arr.length; i++) {
+                Numbers[i] = number2Int(arr[i]); // convert string to a full number
+                if (Numbers[i] > maxValue) {
+                    maxValue = Numbers[i];
+                    ans = i; // do max value to number in Index i
+                }
+            }
             return ans;
 
-
-
-
-
         }
+        public static String multiplyAndConvert(String num1, String num2, int targetBase) {
+            if (targetBase < 2 || targetBase > 16) {
+                return "Invalid target base. Please choose a base between 2 and 16.";
+            }
+
+            if (!Ex1.isNumber(num1) || !Ex1.isNumber(num2)) {
+                return "One or both of the input numbers are invalid.";
+            }
+
+            // Convert both numbers to decimal (base 10)
+            int decimalNum1 = Ex1.number2Int(num1);
+            int decimalNum2 = Ex1.number2Int(num2);
+
+            // Multiply the numbers
+            int product = decimalNum1 * decimalNum2;
+
+            // Convert the result to the target base
+            return Ex1.int2Number(product, targetBase) + "b" + targetBase;
+        }
+
+
+
 //        public static int NormalNum(String S){
 //            int NewNum = Integer.parseInt(S);
 //            System.out.println("num1" + " = );
